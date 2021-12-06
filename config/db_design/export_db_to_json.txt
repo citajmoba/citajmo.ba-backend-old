@@ -1,0 +1,79 @@
+COPY (
+  SELECT json_agg(row_to_json(age_levels)) :: text
+  FROM age_levels
+) to '/Users/Amer/Box Sync/citajba/server/db_design/age_levels.json';
+
+COPY (
+  SELECT json_agg(row_to_json(answers)) :: text
+  FROM answers
+) to '/Users/Amer/Box Sync/citajba/server/db_design/answers.json';
+
+COPY (
+  SELECT json_agg(row_to_json(book_nationalities)) :: text
+  FROM book_nationalities
+) to '/Users/Amer/Box Sync/citajba/server/db_design/book_nationalities.json';
+
+COPY (
+  SELECT json_agg(row_to_json(difficulty_levels)) :: text
+  FROM difficulty_levels
+) to '/Users/Amer/Box Sync/citajba/server/db_design/difficulty_levels.json';
+
+COPY (
+  SELECT json_agg(row_to_json(genres)) :: text
+  FROM genres
+) to '/Users/Amer/Box Sync/citajba/server/db_design/genres.json';
+
+COPY (
+  SELECT json_agg(row_to_json(locations)) :: text
+  FROM locations
+) to '/Users/Amer/Box Sync/citajba/server/db_design/locations.json';
+
+COPY (
+  SELECT json_agg(row_to_json(periods)) :: text
+  FROM periods
+) to '/Users/Amer/Box Sync/citajba/server/db_design/periods.json';
+
+COPY (
+  SELECT json_agg(row_to_json(question_categories)) :: text
+  FROM question_categories
+) to '/Users/Amer/Box Sync/citajba/server/db_design/question_categories.json';
+
+COPY (
+  SELECT json_agg(row_to_json(questions)) :: text
+  FROM questions
+) to '/Users/Amer/Box Sync/citajba/server/db_design/questions.json';
+
+COPY (
+  SELECT json_agg(row_to_json(roles)) :: text
+  FROM roles
+) to '/Users/Amer/Box Sync/citajba/server/db_design/roles.json';
+
+COPY (
+  SELECT json_agg(row_to_json(users)) :: text
+  FROM users
+) to '/Users/Amer/Box Sync/citajba/server/db_design/users.json';
+
+COPY (
+  SELECT json_agg(row_to_json(books_genres)) :: text
+  FROM books_genres
+) to '/Users/Amer/Box Sync/citajba/server/db_design/books_genres.json';
+
+COPY (
+  SELECT json_agg(row_to_json(books_locations)) :: text
+  FROM books_locations
+) to '/Users/Amer/Box Sync/citajba/server/db_design/books_locations.json';
+
+COPY (
+  SELECT json_agg(row_to_json(books_nationalities)) :: text
+  FROM books_nationalities
+) to '/Users/Amer/Box Sync/citajba/server/db_design/books_nationalities.json';
+
+COPY (
+  SELECT json_agg(row_to_json(books_periods)) :: text
+  FROM books_periods
+) to '/Users/Amer/Box Sync/citajba/server/db_design/books_periods.json';
+
+COPY (
+  SELECT json_agg(row_to_json(users_roles)) :: text
+  FROM users_roles
+) to '/Users/Amer/Box Sync/citajba/server/db_design/users_roles.json';

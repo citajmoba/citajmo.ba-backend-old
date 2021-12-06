@@ -1,0 +1,17 @@
+drop table if exists locations cascade;
+drop table if exists roles cascade;
+drop table if exists genres cascade;
+drop table if exists periods cascade;
+drop table if exists book_nationalities cascade;
+drop table if exists question_categories cascade;
+drop table if exists difficulty_levels cascade;
+drop table if exists age_levels cascade;
+drop table if exists books cascade;
+drop table if exists users cascade;
+drop table if exists questions cascade;
+drop table if exists answers cascade;
+drop table if exists books_locations cascade;
+drop table if exists books_genres cascade;
+drop table if exists books_periods cascade;
+drop table if exists books_nationalities cascade;
+drop table if exists users_roles cascade;

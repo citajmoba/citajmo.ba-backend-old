@@ -1,0 +1,100 @@
+{	"question": 
+    {
+        "bookId": "4",
+        "userId": "1",
+        "questionCategoryId": "4",
+        "difficultyLevelId": "3",
+        "question": "Koliko je pasa bilo sa Bilom i Henrijem na početku knjige?",
+        "comment": null,
+	"numberOfAnswers": "4",
+        "approved": false
+    },
+
+    "answers": 
+        [
+	{   
+                "answer": "6",
+                "comment": null,
+                "correct": true
+            },
+		    {
+                "answer": "10",
+                "comment": null,
+                "correct": false
+            },
+		    {   "answer": "8",
+                "comment": null,
+                "correct": false
+            },
+		    {
+                "answer": "4",
+                "comment": null,
+                "correct": false
+            }
+        ]
+}
+
+
+
+{
+    "title": "Legenda o Ali Paši",
+    "author": "Enver Čolaković",
+    "userId": "1",
+    "publication_year": 1975,
+    "value": "5",
+    "difficultyLevelId": "3",
+    "ageLevelId": "5",
+    "status": "WIP",
+    "genres": ["roman"],
+    "periods": ["romantizam"],
+    "nationalities": ["hrvatska"],
+    "locations": ["Sarajevo-1"]
+}
+
+[
+    {
+        "id": "35",
+        "question": "Koliko je pasa bilo sa Bilom i Henrijem na početku knjige?"
+    }   
+]
+
+
+{	"question": 
+    {
+        "bookId": "4",
+        "userId": "1",
+        "questionCategoryId": "4",
+        "difficultyLevelId": "3",
+        "question": "Koliko je ukupno pasa bilo sa Bilom i Henrijem na početku knjige?",
+        "comment": null,
+	"numberOfAnswers": "4",
+        "approved": false
+    },
+
+    "answers": 
+        [
+	        {   
+                "answer": "6",
+                "comment": null,
+                "correct": true
+            },
+		    {
+		     
+                "answer": "10",
+                "comment": null,
+                "correct": false
+            },
+		    {   
+		    
+		        "answer": "8",
+                "comment": null,
+                "correct": false
+            },
+		    {
+		      
+                "answer": "4",
+                "comment": null,
+                "correct": false
+            }
+        ]
+}

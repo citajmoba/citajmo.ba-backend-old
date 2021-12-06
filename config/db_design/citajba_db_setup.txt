@@ -1,0 +1,370 @@
+
+drop table if exists uloge cascade;
+CREATE TABLE uloge
+(
+  id serial primary key,
+  naziv VARCHAR(30) NOT NULL
+);
+
+drop table if exists knjige cascade;
+CREATE TABLE knjige
+(
+  id serial primary key,
+  naslov VARCHAR(200) NOT NULL,
+  pisac VARCHAR(100) NOT NULL,
+  glavni_zanr VARCHAR(30) NOT NULL,
+  sporedni_zanr_1 VARCHAR(30),
+  sporedni_zanr_2 VARCHAR(30),
+  godina_objave	smallint,
+  broj_poglavlja smallint,
+  datum_dodavanja date NOT NULL,
+  dob_citaoca smallint,
+  broj_bodova smallint,
+  domaca boolean, /* da li je knjiga domaca ili ne*/
+  lokacije VARCHAR(30) ARRAY /* list lokacija na kojima se knjiga moze naci */
+);
+
+drop table if exists korisnici cascade;
+CREATE TABLE korisnici
+(
+  id serial primary key,
+  broj_racuna integer NOT NULL,
+  ime VARCHAR(30) NOT NULL,
+  prezime VARCHAR(30),
+  email VARCHAR(50),
+  datum_rodjenja date,
+  korisnicko_ime VARCHAR(20) NOT NULL,
+  lozinka VARCHAR(20) NOT NULL,
+  datum_pristupa date NOT NULL,
+  uloga INTEGER NOT NULL, /* citalac, saradnik, admin */
+  kategorija VARCHAR(20), /* za citaoce: redovni, penzioner, student, ucenik */
+  saldo integer, /* broj zaradjenih poena koji nisu potroseni */
+  CONSTRAINT fk_uloga
+     FOREIGN KEY(uloga)
+        REFERENCES uloge(id)
+	ON DELETE SET DEFAULT
+);
+
+drop table if exists pitanja cascade;
+CREATE TABLE pitanja
+(
+  id serial primary key,
+  knjiga integer NOT NULL,
+  poglavlje smallint, /* broj poglavlja iz kojeg je pitanje */
+  kategorija VARCHAR(20), /* npr. mjesto radnje, vrijeme radnje, likovi, poruke itd. */
+  tezina smallint, /* koliko je pitanje tesko od 1 do 3 */
+  saradnik integer, /* saradnik koji je pripremio pitanje */
+  pitanje text NOT NULL, /* tekst pitanja */
+  komentar text,
+  CONSTRAINT fk_knjiga
+     FOREIGN KEY(knjiga)
+        REFERENCES knjige(id),
+  CONSTRAINT fk_saradnik
+     FOREIGN KEY(saradnik)
+        REFERENCES korisnici(id)
+	ON DELETE SET NULL
+);
+
+drop table if exists odgovori cascade;
+CREATE TABLE odgovori
+(
+  id smallint NOT NULL, /* redni broj odgovora u pitanju*/
+  pitanje integer NOT NULL,
+  odgovor text,
+  tačan Boolean NOT NULL,
+  komentar text,
+  PRIMARY KEY (pitanje, id),
+  CONSTRAINT fk_pitanje
+     FOREIGN KEY(pitanje)
+        REFERENCES pitanja(id)
+	ON DELETE CASCADE
+);
+
+drop table if exists lokacije cascade;
+CREATE TABLE lokacije
+(
+  id serial primary key,
+  ime VARCHAR(30) NOT NULL, 
+  adresa VARCHAR(50) NOT NULL
+);
+
+drop table if exists ispiti cascade;
+CREATE TABLE ispiti
+(
+  id serial primary key,
+  citaoc integer NOT NULL,
+  knjiga integer NOT NULL,
+  datum date NOT NULL,
+  lokacija integer, /* lokacije gdje je ispit odradjen */
+  broj_pitanja smallint NOT NULL,
+  pitanja integer[50] NOT NULL, /* svaki elemenat niza ukazuje na id u tabeli "pitanja" */
+  broj_tacnih_odgovora smallint NOT NULL,
+  poeni smallint, /* broj zaradjenih poena */
+  CONSTRAINT fk_knjiga
+     FOREIGN KEY(knjiga)
+        REFERENCES knjige(id), 
+  CONSTRAINT fk_citaoc
+     FOREIGN KEY(citaoc)
+        REFERENCES korisnici(id)
+	ON DELETE CASCADE,
+  CONSTRAINT fk_lokacija
+     FOREIGN KEY(lokacija)
+        REFERENCES lokacije(id)
+);
+
+INSERT INTO uloge VALUES (DEFAULT,'citaoc');
+INSERT INTO uloge VALUES (DEFAULT,'saradnik');
+INSERT INTO uloge VALUES (DEFAULT,'admin');
+
+
+INSERT INTO knjige VALUES (DEFAULT,'Orlovi rano lete','Branko Ćopić','knjiga za djecu','patriotska','roman',1959,2,12,10,TRUE,'{"Sarajevo"}');
+INSERT INTO knjige VALUES (DEFAULT,'Doživljaji Toma Sojera','Mark Twain','knjiga za djecu','komedija',NULL,1876,35,12,10,FALSE,'{"Sarajevo"}');
+INSERT INTO knjige VALUES (DEFAULT,'Derviš i smrt','Meša Selimović','roman','psihološki roman',NULL,1966,16,16,15,TRUE,'{"Sarajevo"}');
+
+
+INSERT INTO korisnici VALUES (DEFAULT,101,'Amer','Ćatović','acatovic@eng.ucsd.edu','21-Mar-1972','axc4466','$2a$08$wpniw1y3wVPB7qY.UpWZG.6d/z/0ClMIesapKwK5Dx1oPIFLU.agy','20-Sep-2021',3,'redovni',0);
+INSERT INTO korisnici VALUES (DEFAULT,102,'Zina','Ćatović','amer_catovic@yahoo.com','26-Sep-2009','zincat','$2a$08$wpniw1y3wVPB7qY.UpWZG.6d/z/0ClMIesapKwK5Dx1oPIFLU.agy','20-Sep-2021',1,'student',0);
+INSERT INTO korisnici VALUES (DEFAULT,103,'Mensura','Ćatović','axc4466@hotmail.com','12-Jun-1946','mensa','$2a$08$wpniw1y3wVPB7qY.UpWZG.6d/z/0ClMIesapKwK5Dx1oPIFLU.agy','20-Sep-2021',2,'penzioner',0);
+
+
+INSERT INTO lokacije VALUES (DEFAULT,'Sarajevo-1','Obala Maka Dizdara 7');
+INSERT INTO lokacije VALUES (DEFAULT,'Sarajevo-2','Vojničko polje');
+
+
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'likovi',1,1,'Koji od ovih su među glavnim likovima knjige Orlovi rano lete?','odgovor ne mora da sadrži sve glavne likove');
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'mjesto radnje',1,1,'Koje je glavno mjesto radnje u knjizi Orlovi rano lete?',NULL);
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'vrijeme radnje',1,1,'U koje vrijeme se dešava radnja u knjizi Orlovi rano lete?',NULL);
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'likovi',1,1,'Koje je bilo pravo ime lika sa nadimkom Stric?',NULL);
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'likovi',1,1,'Koji nadimak je imao školski učitelj?',NULL);
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'mjesto radnje',1,1,'Kako se zvala šuma u kojoj se dešavao najveći dio radnje u knjzi?',NULL);
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'mjesto radnje',1,1,'Kako se zvao dječiji logor u šumi u kome su se često dešavali događaji opisani u knjizi?',NULL);
+
+
+INSERT INTO odgovori VALUES(1,1,'Nikolica, Stric, Lunja',TRUE);
+INSERT INTO odgovori VALUES(2,1,'Nikoletina Bursać',FALSE);
+INSERT INTO odgovori VALUES(3,1,'Milan i Lunja',FALSE);
+INSERT INTO odgovori VALUES(4,1,'Mirko i Slavko',FALSE);
+
+INSERT INTO odgovori VALUES(1,2,'Bihać',FALSE);
+INSERT INTO odgovori VALUES(2,2,'Petrovac',FALSE);
+INSERT INTO odgovori VALUES(3,2,'Selo Lipovo',TRUE);
+INSERT INTO odgovori VALUES(4,2,'Sarajevo',FALSE);
+
+INSERT INTO odgovori VALUES(1,3,'1948. godine',FALSE);
+INSERT INTO odgovori VALUES(2,3,'1938. godine',FALSE);
+INSERT INTO odgovori VALUES(3,3,'Početkom Drugog svjetskog rata',TRUE);
+INSERT INTO odgovori VALUES(4,3,'1945. godine',FALSE);
+
+INSERT INTO odgovori VALUES(1,4,'Nikola',FALSE);
+INSERT INTO odgovori VALUES(2,4,'Stevo',TRUE);
+INSERT INTO odgovori VALUES(3,4,'Jovan',FALSE);
+INSERT INTO odgovori VALUES(4,4,'Ivan',FALSE);
+
+INSERT INTO odgovori VALUES(1,5,'Pjanac',FALSE);
+INSERT INTO odgovori VALUES(2,5,'Paprika',TRUE);
+INSERT INTO odgovori VALUES(3,5,'Jež',FALSE);
+INSERT INTO odgovori VALUES(4,5,'Lisica',FALSE);
+
+INSERT INTO odgovori VALUES(1,6,'Lisina',FALSE);
+INSERT INTO odgovori VALUES(2,6,'Perućica',FALSE);
+INSERT INTO odgovori VALUES(3,6,'Borova šuma',FALSE);
+INSERT INTO odgovori VALUES(4,6,'Prokin gaj',TRUE);
+
+INSERT INTO odgovori VALUES(1,7,'Tepsija',TRUE);
+INSERT INTO odgovori VALUES(2,7,'Lisina',FALSE);
+INSERT INTO odgovori VALUES(3,7,'Šumski logor',FALSE);
+INSERT INTO odgovori VALUES(4,7,'Bukovik',FALSE);
+
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'zaplet',1,1,'Kako počinje roman "Orlovi rano lete?',NULL);
+
+INSERT INTO odgovori VALUES(1,8,'Igrom na livadi',FALSE);
+INSERT INTO odgovori VALUES(2,8,'Scenom u učionici',FALSE);
+INSERT INTO odgovori VALUES(3,8,'Opisom Prokinog gaja',TRUE);
+INSERT INTO odgovori VALUES(4,8,'Razgovorom između Jovančeta i Nikolice',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'zaplet',1,1,'Šta je vrhunac radnje u prvom dijelu romana?',NULL);
+
+INSERT INTO odgovori VALUES(1,9,'Smiješna borba između roditelja i "odmetnika"',TRUE);
+INSERT INTO odgovori VALUES(2,9,'Napad Nijemaca na selo Lipovo',FALSE);
+INSERT INTO odgovori VALUES(3,9,'Građenje nove škole',FALSE);
+INSERT INTO odgovori VALUES(4,9,'Odlazak družine u rat',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'zaplet',1,1,'Čemu služi pećina koju su na kraj potoka otkrili dječaci?',NULL);
+
+INSERT INTO odgovori VALUES(1,10,'Skrovište od nevremena',FALSE);
+INSERT INTO odgovori VALUES(2,10,'Za bježanje od kuće',FALSE);
+INSERT INTO odgovori VALUES(3,10,'Hvatanje sliejpih miševa',FALSE);
+INSERT INTO odgovori VALUES(4,10,'Pretvorena je u partizansku radionicu gdje je čuvano naoružanje oteto od neprijatelja.',TRUE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,1,1,'zaplet',1,1,'Kako je završio neomiljeni učitelj?',NULL);
+
+INSERT INTO odgovori VALUES(1,11,'Zbog pijanstva, doživio je nesreću',FALSE);
+INSERT INTO odgovori VALUES(2,11,'Protjeran je na zahtejv mještana, a vraćena prijašnja učiteljica',TRUE);
+INSERT INTO odgovori VALUES(3,11,'Postao je direktor u školi',FALSE);
+INSERT INTO odgovori VALUES(4,11,'Ništa mu se nije desilo',FALSE);
+
+INSERT INTO pitanja VALUES(DEFAULT,3,1,'likovi',1,1,'Kako se zvao brat glvnog junaka Ahmeda Nurudina?',NULL);
+
+INSERT INTO odgovori VALUES(1,12,'Hasan',FALSE);
+INSERT INTO odgovori VALUES(2,12,'Harun',TRUE);
+INSERT INTO odgovori VALUES(3,12,'Džemal',FALSE);
+INSERT INTO odgovori VALUES(4,12,'Mula-Jusuf',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,3,1,'likovi',1,1,'Koji od ovih su sporedni likovi romana "Derviš i smrt"?',NULL);
+
+INSERT INTO odgovori VALUES(1,13,'Hasan, Alija, vezir',FALSE);
+INSERT INTO odgovori VALUES(2,13,'Mula-Jusuf, Ishak, Hadži-Sinanudin',TRUE);
+INSERT INTO odgovori VALUES(3,13,'Džemal, Halima, kadija',FALSE);
+INSERT INTO odgovori VALUES(4,13,'Ali-hodža, Hasan, trgovac',FALSE);
+
+INSERT INTO pitanja VALUES(DEFAULT,3,5,'likovi',1,1,'Čime se bavio Ahmedov brat Harun?',NULL);
+
+INSERT INTO odgovori VALUES(1,14,'Student',FALSE);
+INSERT INTO odgovori VALUES(2,14,'Kadija',FALSE);
+INSERT INTO odgovori VALUES(3,14,'Trgovac',FALSE);
+INSERT INTO odgovori VALUES(4,14,'Pisar',TRUE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,3,1,'likovi',1,1,'Koje starosti je bio Ahmed Nurudin?',NULL);
+
+INSERT INTO odgovori VALUES(1,15,'Oko trideset godina',FALSE);
+INSERT INTO odgovori VALUES(2,15,'Oko četrdeset godina',FALSE);
+INSERT INTO odgovori VALUES(3,15,'Oko pedeset godina',FALSE);
+INSERT INTO odgovori VALUES(4,15,'Oko šezdeset godina',TRUE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,3,5,'zaplet',1,1,'Zbog čega je osuđen i ubujen Ahmedov brat Harun?',NULL);
+
+INSERT INTO odgovori VALUES(1,16,'Nije pristao da ide u vojsku',FALSE);
+INSERT INTO odgovori VALUES(2,16,'Napisao je članak protiv vlasti',FALSE);
+INSERT INTO odgovori VALUES(3,16,'Ukrao je konja',FALSE);
+INSERT INTO odgovori VALUES(4,16,'Vidio je dokumente koji su ukazivali na korupciju vlasti',TRUE);
+
+INSERT INTO pitanja VALUES(DEFAULT,3,5,'likovi',1,1,'Čime se bavio Ahmedov brat Harun?',NULL);
+
+INSERT INTO odgovori VALUES(1,17,'Student',FALSE);
+INSERT INTO odgovori VALUES(2,17,'Kadija',FALSE);
+INSERT INTO odgovori VALUES(3,17,'Trgovac',FALSE);
+INSERT INTO odgovori VALUES(4,17,'Pisar',TRUE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,3,1,'mjesto radnje',1,1,'Gdje se dešava radnja romana Derviš i smrt??',NULL);
+
+INSERT INTO odgovori VALUES(1,18,'U bezimenoj kasabi u Bosni',TRUE);
+INSERT INTO odgovori VALUES(2,18,'U Travniku',FALSE);
+INSERT INTO odgovori VALUES(3,18,'Sarajevu',FALSE);
+INSERT INTO odgovori VALUES(4,18,'Mostaru',TRUE);
+
+INSERT INTO pitanja VALUES(DEFAULT,3,5,'zaplet',2,1,'Zbog čega Ahmedov otac posjećuje Ahmeda?',NULL);
+
+INSERT INTO odgovori VALUES(1,19,'Da traži od njega da mu pomogne da oslobodi brata',TRUE);
+INSERT INTO odgovori VALUES(2,19,'Da traži finansijsku pomoć',FALSE);
+INSERT INTO odgovori VALUES(3,19,'Da ga obavijesti o smrti majke',FALSE);
+INSERT INTO odgovori VALUES(4,19,'Ahmedov otac se ne pojavljuje u romanu',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,3,16,'zaplet',2,1,'Koji je zadnji važan lik koji se pojavljuje u romanu Derviš i smrt?',NULL);
+
+INSERT INTO odgovori VALUES(1,20,'Hasan',FALSE);
+INSERT INTO odgovori VALUES(2,20,'Kara-Zaim',FALSE);
+INSERT INTO odgovori VALUES(3,20,'Stražar',FALSE);
+INSERT INTO odgovori VALUES(4,20,'Ahmedov sin',TRUE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,3,16,'zaplet',2,1,'Kojim ajetom iz Kurana završava roman?','Riječ je o istom ajetu kojim počinje roman.');
+
+INSERT INTO odgovori VALUES(1,21,'Roman ne završava kuranskim ajetom.',FALSE);
+INSERT INTO odgovori VALUES(2,21,'Pozivam za svjedoka vrijeme, početak i svršetak svega – da je svaki čovjek uvijek na gubitku',TRUE);
+INSERT INTO odgovori VALUES(3,21,'Čovjek je vjere svog prijatelja, pa neka čovjek gleda s kim će se družiti.',FALSE);
+INSERT INTO odgovori VALUES(4,21,'Najgore što se može naći kod čovjeka jeste škrtost zbog pohlepe i strah bez razloga.',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,2,1,'mjesto radnje',1,1,'Gdje se događa radnja u knjizi?',NULL);
+
+INSERT INTO odgovori VALUES(1,22,'U New Yorku',FALSE);
+INSERT INTO odgovori VALUES(2,22,'U Čikagu',FALSE);
+INSERT INTO odgovori VALUES(3,22,'U Londonu',FALSE);
+INSERT INTO odgovori VALUES(4,22,'U izmišljeniom gradu St. Petersburg',TRUE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,2,1,'likovi',1,1,'Ko je gosp. Dobins?',NULL);
+
+INSERT INTO odgovori VALUES(1,23,'Učitelj',FALSE);
+INSERT INTO odgovori VALUES(2,23,'Direktor škole',TRUE);
+INSERT INTO odgovori VALUES(3,23,'Doktor',FALSE);
+INSERT INTO odgovori VALUES(4,23,'Sveštenik',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,2,NULL,'likovi',2,1,'Koje su osobine teke Poli?',NULL);
+
+INSERT INTO odgovori VALUES(1,24,'U Hladna i namćorasta',FALSE);
+INSERT INTO odgovori VALUES(2,24,'U Nasilna i zla',FALSE);
+INSERT INTO odgovori VALUES(3,24,'Dobrodušna i jednostavna',TRUE);
+INSERT INTO odgovori VALUES(4,24,'Bogobijazna i tiha',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,2,NULL,'likovi',2,1,'Koja dva lika su motivisana zlobom?',NULL);
+
+INSERT INTO odgovori VALUES(1,25,'Maf Poter i Indijanac Džo',FALSE);
+INSERT INTO odgovori VALUES(2,25,'Indijanac Džo i Tom Sawyer',FALSE);
+INSERT INTO odgovori VALUES(3,25,'Indijanac Džo i Sid',TRUE);
+INSERT INTO odgovori VALUES(4,25,'Sid i Maf Poter',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,2,NULL,'poruke',3,1,'Koje su prednosti niskog društvenog statusa Haklberi Fina?',NULL);
+
+INSERT INTO odgovori VALUES(1,26,'Besplatna zdravstvena zaštita',FALSE);
+INSERT INTO odgovori VALUES(2,26,'Besplatno obrazovanje',FALSE);
+INSERT INTO odgovori VALUES(3,26,'Besplatna hrana',FALSE);
+INSERT INTO odgovori VALUES(4,26,'Sloboda',TRUE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,2,NULL,'likovi',1,1,'Ko je Sid?',NULL);
+
+INSERT INTO odgovori VALUES(1,27,'Muž tetke Poli',FALSE);
+INSERT INTO odgovori VALUES(2,27,'Tomov mlađi polubrat',TRUE);
+INSERT INTO odgovori VALUES(3,27,'Tomov otac',FALSE);
+INSERT INTO odgovori VALUES(4,27,'Tomov pas',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,2,NULL,'zaplet',2,2,'Ko je okrivljen za ubsitvo Dr. Robinsona?',NULL);
+
+INSERT INTO odgovori VALUES(1,28,'Maf Poter',TRUE);
+INSERT INTO odgovori VALUES(2,28,'Indijanac Džo',FALSE);
+INSERT INTO odgovori VALUES(3,28,'Hos Williams',FALSE);
+INSERT INTO odgovori VALUES(4,28,'Tom Sawyer',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,2,NULL,'zaplet',2,1,'Kako Tom Sawyer poziva Haka da idu u avanture poslije ponoći?',NULL);
+
+INSERT INTO odgovori VALUES(1,29,'Laje kao pas',FALSE);
+INSERT INTO odgovori VALUES(2,29,'Mjauče kao mačka',TRUE);
+INSERT INTO odgovori VALUES(3,29,'Kukuriče kao pijetao',FALSE);
+INSERT INTO odgovori VALUES(4,29,'Huče kao sova',FALSE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,2,NULL,'zaplet',2,1,'Koji dječak prvi odustaje od piratske ekspedicije?',NULL);
+
+INSERT INTO odgovori VALUES(1,30,'Tom Sawyer',FALSE);
+INSERT INTO odgovori VALUES(2,30,'Haklberi Fin',FALSE);
+INSERT INTO odgovori VALUES(3,30,'Ben Rodžers',FALSE);
+INSERT INTO odgovori VALUES(4,30,'Džo Harper',TRUE);
+
+
+INSERT INTO pitanja VALUES(DEFAULT,2,NULL,'zaplet',1,1,'Ko usvaja Haklberi Fina na kraju romana?',NULL);
+
+INSERT INTO odgovori VALUES(1,31,'Udovica Daglas',TRUE);
+INSERT INTO odgovori VALUES(2,31,'Tetka Poli',FALSE);
+INSERT INTO odgovori VALUES(3,31,'Maf Poter',FALSE);
+INSERT INTO odgovori VALUES(4,31,'Sudija Tačer',FALSE);
+
+INSERT INTO pitanja VALUES(DEFAULT,2,NULL,'zaplet',3,1,'Ko je jedini zagrlio Kaka kada su se tri dječaka vratila sa pogreba?',NULL);
+
+INSERT INTO odgovori VALUES(1,32,'Tom Sawyer',FALSE);
+INSERT INTO odgovori VALUES(2,32,'Beki Tačer',FALSE);
+INSERT INTO odgovori VALUES(3,32,'Maf Poter',FALSE);
+INSERT INTO odgovori VALUES(4,32,'Tetka Poli',TRUE);

@@ -1,0 +1,134 @@
+drop table if exists books_locations cascade;
+drop table if exists books_genres cascade;
+drop table if exists books_periods cascade;
+drop table if exists books_nationalities cascade;
+drop table if exists users_roles cascade;
+
+drop table if exists locations cascade;
+CREATE TABLE locations
+(
+  id serial primary key,
+  name VARCHAR(20) NOT NULL,
+  address VARCHAR(50),
+  city VARCHAR(30),
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists roles cascade;
+CREATE TABLE roles
+(
+  id serial primary key,
+  name VARCHAR(30) NOT NULL,
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists genres cascade;
+CREATE TABLE genres
+(
+  id serial primary key,
+  name VARCHAR(30) NOT NULL,
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists periods cascade;
+CREATE TABLE periods
+(
+  id serial primary key,
+  name VARCHAR(30) NOT NULL,
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists book_nationalities cascade;
+CREATE TABLE book_nationalities
+(
+  id serial primary key,
+  name VARCHAR(30) NOT NULL, 
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists question_categories cascade;
+CREATE TABLE question_categories
+(
+  id serial primary key,
+  name VARCHAR(30) NOT NULL, 
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists difficulty_levels cascade;
+CREATE TABLE difficulty_levels
+(
+  id serial primary key,
+  name VARCHAR(30) NOT NULL,
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists age_levels cascade;
+CREATE TABLE age_levels
+(
+  id serial primary key,
+  name VARCHAR(30) NOT NULL,
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists books cascade;
+CREATE TABLE books
+(
+  id serial primary key,
+  title VARCHAR(200) NOT NULL,
+  author VARCHAR(100) NOT NULL,
+  publication_year smallint,
+  value smallint,
+  "ageLevelId" smallint,
+  status VARCHAR(10) NOT NULL,
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists users cascade;
+CREATE TABLE users
+(
+  id serial primary key,
+  acc_no integer NOT NULL,
+  name VARCHAR(30) NOT NULL,
+  lastname VARCHAR(30),
+  email VARCHAR(50) NOT NULL,
+  dob date,
+  username VARCHAR(20) NOT NULL,
+  password VARCHAR(60) NOT NULL, 
+  type VARCHAR(20), 
+  point_balance integer,
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists questions cascade;
+CREATE TABLE questions
+(
+  id serial primary key,
+  question VARCHAR(500) NOT NULL,
+  comment text,
+  "numberOfAnswers" smallint NOT NULL,
+  approved Boolean NOT NULL,
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+
+drop table if exists answers cascade;
+CREATE TABLE answers
+(
+  id smallint NOT NULL, /* redni broj odgovora u pitanju*/
+  answer VARCHAR(500),
+  correct Boolean NOT NULL,
+  comment text,
+  "createdAt" TIMESTAMP,
+  "updatedAt" TIMESTAMP
+);
+

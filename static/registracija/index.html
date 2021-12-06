@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Registracija</title>
+    </head>
+    <body>
+        <h1>Registracija</h1>
+        <form id="reg-form">
+            <input type="text" autocomplete="off" id="username" placeholder="Korisničko ime" />
+            <input type="password" id="password" placeholder="Lozinka" />
+            <input type="submit" value="Pošalji" />
+        </form>
+
+        <script>
+            const form = document.getElementById('reg-form');
+            form.addEventListener('submit', registerUser)
+
+            async function registerUser(event) {
+                event.preventDefault();
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
+
+                const response = await fetch('/registracija', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                }).then((res) => res.json())
+
+                console.log(response)
+            }
+        </script>
+        
+    </body>
+</html>

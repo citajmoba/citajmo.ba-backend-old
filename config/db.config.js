@@ -1,9 +1,9 @@
 module.exports = {
     USER: "postgres",
-    PASSWORD: "Oran0098",
+    PASSWORD: "Alger0096",
     HOST: "localhost",
-    port: 5432,
-    DB: "citaj.ba.new",
+    PORT: 5432,
+    DB: "citajmo.ba",
     dialect: "postgres",
     omitNull: true,
     pool: {

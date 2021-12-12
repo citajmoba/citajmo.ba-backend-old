@@ -6,7 +6,7 @@ const pgtools = require("pgtools");
 const config = require("./config/db.config.js");
 
 let corsOptions = {
-    origin: "http://localhost:3000"
+    origin: "www.citajmo.ba"
   };
 
 //middleware
